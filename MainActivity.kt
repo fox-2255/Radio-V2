@@ -1,26 +1,36 @@
 package com.xdev.myradio
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var playBtn: Button
+    private var exoPlayer: ExoPlayer? = null
+    private val STREAM_URL = "http://rmnwebcaster.freeddns.org:8000/ifmmanila"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        drawerLayout = findViewById(R.id.drawerLayout)
-        playBtn = findViewById(R.id.playBtn)
+        val playBtn: Button = findViewById(R.id.playBtn)
+
+        // Initialize ExoPlayer
+        exoPlayer = ExoPlayer.Builder(this).build()
 
         playBtn.setOnClickListener {
-            Toast.makeText(this, "Radio is starting...", Toast.LENGTH_SHORT).show()
+            val mediaItem = MediaItem.fromUri(STREAM_URL)
+            exoPlayer?.setMediaItem(mediaItem)
+            exoPlayer?.prepare()
+            exoPlayer?.play()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        exoPlayer?.release()
+        exoPlayer = null
     }
 }
